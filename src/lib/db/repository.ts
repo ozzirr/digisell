@@ -1,7 +1,8 @@
 import { supabase } from "@/lib/db/supabase";
 import type { Customer, Purchase, UserWorkbookAnswer, UserWorkbookProgress } from "@/lib/db/types";
 
-function normalizeEmail(email: string) {
+function normalizeEmail(email: any) {
+  if (typeof email !== "string") return "";
   return email.trim().toLowerCase();
 }
 

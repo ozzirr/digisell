@@ -5,9 +5,14 @@ import { createMagicAccessUrl } from "@/lib/auth/customer-access";
 import { updateCustomer, upsertCustomer } from "@/lib/db/repository";
 import { Customer } from "@/lib/db/types";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function loginAction(email: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey && process.env.NODE_ENV === "production") {
+    return { success: false, error: "Configurazione email mancante (RESEND_API_KEY)." };
+  }
+  
+  const resend = new Resend(apiKey);
+
   try {
     // 1. Create or update customer
     await upsertCustomer(email);
