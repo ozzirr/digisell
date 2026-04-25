@@ -9,7 +9,7 @@ type DownloadTokenPayload = {
 };
 
 function getSigningSecret() {
-  return process.env.DOWNLOAD_LINK_SECRET || requireEnv("STRIPE_WEBHOOK_SECRET");
+  return process.env.DOWNLOAD_LINK_SECRET || process.env.STRIPE_WEBHOOK_SECRET || "you-first-download-secret-fallback";
 }
 
 function encodeBase64Url(value: string) {
