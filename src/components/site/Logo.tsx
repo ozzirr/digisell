@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import type { ComponentProps } from "react";
 
 type LogoProps = {
   accentColor?: string;
-  href?: string;
+  href?: ComponentProps<typeof Link>["href"];
   className?: string;
   onClick?: () => void;
 };
