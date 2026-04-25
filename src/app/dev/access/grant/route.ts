@@ -19,10 +19,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/dev/access", request.url));
   }
 
-  const customer = await upsertCustomer({
-    email: "test@youfirst.local",
-    name: "Cliente test",
-  });
+  const customer = await upsertCustomer("test@youfirst.local", "Cliente test");
 
   await upsertPaidPurchase({
     customerId: customer.id,
