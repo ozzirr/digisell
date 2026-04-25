@@ -1,0 +1,22 @@
+<svg width="900" height="1100" viewBox="0 0 900 1100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="1100" rx="48" fill="#17201A"/>
+  <rect x="38" y="38" width="824" height="1024" rx="36" fill="#FFF8ED"/>
+  <rect x="82" y="82" width="736" height="936" rx="28" fill="#F6E8DA"/>
+  <path d="M82 705C174 655 248 657 341 719C450 792 563 803 818 626V990C818 1005.46 805.464 1018 790 1018H110C94.536 1018 82 1005.46 82 990V705Z" fill="#DCE6D7"/>
+  <path d="M82 760C215 710 324 759 440 822C537 875 657 880 818 790V990C818 1005.46 805.464 1018 790 1018H110C94.536 1018 82 1005.46 82 990V760Z" fill="#E7CFC7"/>
+  <circle cx="672" cy="256" r="96" fill="#B0614F" fill-opacity="0.18"/>
+  <circle cx="672" cy="256" r="56" fill="#B0614F"/>
+  <rect x="150" y="162" width="310" height="18" rx="9" fill="#B0614F"/>
+  <text x="150" y="302" fill="#17201A" font-family="Arial, sans-serif" font-size="76" font-weight="700">
+    <tspan x="150" dy="0">The</tspan>
+    <tspan x="150" dy="86">Emotional</tspan>
+    <tspan x="150" dy="86">Reset</tspan>
+    <tspan x="150" dy="86">Workbook</tspan>
+  </text>
+  <text x="150" y="682" fill="#5F685F" font-family="Arial, sans-serif" font-size="28" font-weight="600">
+    <tspan x="150" dy="0">Guided prompts for clarity,</tspan>
+    <tspan x="150" dy="42">calm, and next steps.</tspan>
+  </text>
+  <rect x="150" y="892" width="250" height="58" rx="29" fill="#17201A"/>
+  <text x="190" y="930" fill="#FFF8ED" font-family="Arial, sans-serif" font-size="22" font-weight="700">DIGITAL PDF</text>
+</svg>
