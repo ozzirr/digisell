@@ -4,6 +4,7 @@ import { ArrowRight, BookOpenText, Clock3, ShieldCheck } from "lucide-react";
 
 import { SiteMenu } from "@/components/site/SiteMenu";
 import { DashboardTopBar } from "@/components/site/DashboardTopBar";
+import { ProfileModal } from "@/components/dashboard/ProfileModal";
 import { buildPurchasedProducts } from "@/lib/dashboard";
 import { getCurrentCustomer } from "@/lib/auth/customer-access";
 import { getCustomerPurchases, getProgress } from "@/lib/db/repository";
@@ -24,22 +25,64 @@ export default async function DashboardPage() {
   const progress = await Promise.all(purchases.map((purchase) => getProgress(customer.id, purchase.productSlug)));
   const purchasedProducts = buildPurchasedProducts(purchases, progress);
 
+  // Profile is complete if we have name, gender and age
+  const isProfileComplete = !!(customer.name && customer.gender && customer.age);
+
   return (
     <main className="min-h-screen bg-[#f8f2e8] px-4 py-5 text-[#211b17] sm:px-8 sm:py-8">
+      {!isProfileComplete && <ProfileModal customer={customer} />}
+
       <section className="mx-auto max-w-5xl">
         <DashboardTopBar />
-        <DashboardWelcome customerEmail={customer.email} />
+        <DashboardWelcome customer={customer} />
         <div className="mt-5 sm:mt-7">
           {purchasedProducts.length === 0 ? (
-            <div className="rounded-[1.4rem] bg-white/72 p-6 shadow-[0_14px_40px_rgba(54,39,28,0.06)] sm:p-8">
-              <p className="text-xl font-semibold text-[#5f544b]">Non hai ancora acquistato nessun workbook.</p>
+            <div className="grid gap-6">
+              <article className="overflow-hidden rounded-[1.35rem] bg-white shadow-[0_18px_56px_rgba(54,39,28,0.08)]">
+                <div className="h-2 bg-[#b96f62]" />
+                <div className="p-6 sm:p-8">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="inline-flex items-center gap-2 rounded-full bg-[#f8f2e8] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[#7a6c60]">
+                        <BookOpenText className="h-4 w-4" />
+                        Risorsa gratuita
+                      </p>
+                      <h2 className="mt-4 text-[2rem] font-semibold leading-[1.03] tracking-normal sm:text-4xl">
+                        Primi Passi: Kit di sopravvivenza
+                      </h2>
+                    </div>
+                  </div>
+                  <p className="mt-4 text-lg font-semibold leading-8 text-[#5f544b]">
+                    Inizia da qui. Un piccolo percorso guidato per aiutarti a fermarti e respirare nei momenti di massima confusione.
+                  </p>
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <Link
+                      href="/catalogo"
+                      className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full bg-[#211b17] px-8 py-4 text-base font-black text-white shadow-[0_18px_48px_rgba(33,27,23,0.18)] transition hover:opacity-92"
+                    >
+                      <span className="text-white">Scarica Manuale PDF</span>
+                      <ArrowRight className="h-5 w-5 text-white" />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+
+              <div className="rounded-[1.4rem] bg-[#f0ddd7]/30 p-6 sm:p-8 border-2 border-dashed border-[#b96f62]/20">
+                <h3 className="text-xl font-black text-[#69372f]">Ti senti bloccato/a?</h3>
+                <p className="mt-2 text-[#5f544b] font-semibold">
+                  I nostri workbook sono pensati per darti strumenti concreti. Dai un'occhiata al catalogo per trovare quello più adatto a te.
+                </p>
+                <Link href="/catalogo" className="mt-4 inline-flex font-black text-[#b96f62] underline underline-offset-4">
+                  Vedi il catalogo completo
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="grid gap-4 lg:grid-cols-2">
-              {purchasedProducts.map(({ product, workbook, progressPercent }) => (
+              {purchasedProducts.map(({ product, workbook, progressPercent }, idx) => (
                 <article
                   key={product.slug}
-                  className="overflow-hidden rounded-[1.35rem] bg-white/76 shadow-[0_18px_56px_rgba(54,39,28,0.08)]"
+                  className={`animate-fade-in stagger-${(idx % 3) + 1} overflow-hidden rounded-[1.35rem] bg-white/76 shadow-[0_18px_56px_rgba(54,39,28,0.08)]`}
                 >
                   <div className="h-2" style={{ backgroundColor: product.accentColor }} />
                   <div className="p-5 sm:p-6">
@@ -113,10 +156,13 @@ export default async function DashboardPage() {
   );
 }
 
-function DashboardWelcome({ customerEmail }: { customerEmail: string }) {
+function DashboardWelcome({ customer }: { customer: Customer }) {
+  const greeting = customer.gender === "f" ? "Bentornata" : customer.gender === "m" ? "Bentornato" : "Bentornato/a";
+  const displayName = customer.name ? `, ${customer.name}` : "";
+
   return (
-    <div className="mt-7 rounded-[1.5rem] bg-[#211b17] p-5 text-white shadow-[0_20px_70px_rgba(33,27,23,0.16)] sm:mt-9 sm:p-8">
-      <p className="text-sm font-black uppercase tracking-[0.16em] text-[#e8d6cd]">Bentornato/a</p>
+    <div className="animate-fade-in mt-7 rounded-[1.5rem] bg-[#211b17] p-5 text-white shadow-[0_20px_70px_rgba(33,27,23,0.16)] sm:mt-9 sm:p-8">
+      <p className="text-sm font-black uppercase tracking-[0.16em] text-[#e8d6cd]">{greeting}{displayName}</p>
       <h1 className="mt-3 text-[2.25rem] font-semibold leading-[0.98] tracking-normal sm:text-6xl">
         La tua area You First
       </h1>
@@ -124,7 +170,7 @@ function DashboardWelcome({ customerEmail }: { customerEmail: string }) {
         Qui trovi i workbook che hai acquistato, le risposte salvate e il punto da cui riprendere.
       </p>
       <p className="mt-4 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-white/72 sm:mt-5">
-        Accesso: {customerEmail}
+        Accesso: {customer.email}
       </p>
     </div>
   );

@@ -51,6 +51,7 @@ export default async function WorkbookPage({ params, searchParams }: WorkbookPag
       initialPageId={initialPageId}
       initialAnswers={answers}
       initialProgress={progress}
+      customer={customer}
     />
   );
 }

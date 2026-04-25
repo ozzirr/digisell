@@ -2,6 +2,8 @@ export type Customer = {
   id: string;
   email: string;
   name?: string;
+  gender?: "m" | "f" | "other";
+  age?: number;
   createdAt: string;
 };
 

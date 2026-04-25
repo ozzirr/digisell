@@ -52,13 +52,13 @@ export function CheckoutButton({ productSlug, children, variant = "primary", com
           "inline-flex items-center justify-center gap-2 rounded-full text-sm font-black transition disabled:cursor-not-allowed disabled:opacity-70",
           compact ? "min-h-11 px-5 py-2.5" : "min-h-12 px-6 py-3",
           variant === "primary"
-            ? "bg-[#211b17] text-white shadow-[0_18px_50px_rgba(33,27,23,0.22)] hover:bg-[#342a23]"
+            ? "bg-[#211b17] !text-white shadow-[0_18px_50px_rgba(33,27,23,0.22)] hover:bg-[#342a23]"
             : "border border-[#cbbbab] bg-white/75 text-[#211b17] hover:border-[#211b17]",
         )}
       >
-        {isLoading ? <Loader2 className={cn("h-4 w-4 animate-spin", variant === "primary" && "text-white")} aria-hidden /> : null}
-        <span style={variant === "primary" ? { color: "#ffffff" } : undefined}>{children}</span>
-        {!isLoading ? <ArrowRight className={cn("h-4 w-4", variant === "primary" && "text-white")} aria-hidden /> : null}
+        {isLoading ? <Loader2 className={cn("h-4 w-4 animate-spin", variant === "primary" && "!text-white")} aria-hidden /> : null}
+        <span style={variant === "primary" ? { color: "#ffffff" } : undefined} className={cn(variant === "primary" && "!text-white")}>{children}</span>
+        {!isLoading ? <ArrowRight className={cn("h-4 w-4", variant === "primary" && "!text-white")} aria-hidden /> : null}
       </button>
       {error ? <p className="max-w-sm text-sm font-medium text-[#a33f35]">{error}</p> : null}
     </div>

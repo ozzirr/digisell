@@ -36,7 +36,7 @@ export function LandingPage({ product, isAuthenticated = false }: LandingPagePro
 
   return (
     <main
-      className="min-h-screen bg-[#f8f2e8] pb-24 text-[#211b17] sm:pb-0"
+      className="min-h-screen bg-[#fbf7f1] pb-24 text-[#211b17] selection:bg-[#211b17] selection:text-white sm:pb-0"
       style={
         {
           "--product-accent": product.accentColor,

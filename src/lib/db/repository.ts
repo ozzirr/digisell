@@ -1,89 +1,66 @@
-import { randomUUID } from "crypto";
-
-import type { Customer, Purchase, UserWorkbookAnswer, UserWorkbookProgress } from "@/lib/db/types";
 import { supabase } from "@/lib/db/supabase";
+import type { Customer, Purchase, UserWorkbookAnswer, UserWorkbookProgress } from "@/lib/db/types";
 
 function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
 
-export async function upsertCustomer(input: { email: string; name?: string | null }): Promise<Customer> {
-  const email = normalizeEmail(input.email);
-
-  const { data, error } = await supabase
-    .from("customers")
-    .upsert(
-      {
-        email,
-        name: input.name || undefined,
-      },
-      { onConflict: "email" },
-    )
-    .select()
-    .single();
-
-  if (error) throw error;
-
+function mapCustomerFromDb(row: any): Customer {
   return {
-    id: data.id,
-    email: data.email,
-    name: data.name,
-    createdAt: data.created_at,
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    gender: row.gender,
+    age: row.age,
+    createdAt: row.created_at,
   };
 }
 
-export async function upsertPaidPurchase(input: {
-  customerId: string;
-  productSlug: string;
-  stripeSessionId: string;
-  stripeCustomerId?: string | null;
-}): Promise<Purchase> {
-  const { data, error } = await supabase
-    .from("purchases")
-    .upsert(
-      {
-        customer_id: input.customerId,
-        product_slug: input.productSlug,
-        stripe_session_id: input.stripeSessionId,
-        stripe_customer_id: input.stripeCustomerId || undefined,
-        status: "paid",
-      },
-      { onConflict: "stripe_session_id" },
-    )
-    .select()
-    .single();
+function mapCustomerToDb(customer: Partial<Customer>): any {
+  const row: any = {};
+  if (customer.id) row.id = customer.id;
+  if (customer.email) row.email = customer.email;
+  if (customer.name !== undefined) row.name = customer.name;
+  if (customer.gender !== undefined) row.gender = customer.gender;
+  if (customer.age !== undefined) row.age = customer.age;
+  return row;
+}
 
-  if (error) throw error;
+export async function getCustomer(id: string): Promise<Customer | null> {
+  const { data, error } = await supabase.from("customers").select("*").eq("id", id).single();
 
-  return {
-    id: data.id,
-    customerId: data.customer_id,
-    productSlug: data.product_slug,
-    stripeSessionId: data.stripe_session_id,
-    stripeCustomerId: data.stripe_customer_id,
-    status: data.status,
-    createdAt: data.created_at,
-  };
+  if (error || !data) return null;
+  return mapCustomerFromDb(data);
 }
 
 export async function getCustomerByEmail(email: string): Promise<Customer | null> {
+  const { data, error } = await supabase.from("customers").select("*").eq("email", normalizeEmail(email)).single();
+
+  if (error || !data) return null;
+  return mapCustomerFromDb(data);
+}
+
+export async function upsertCustomer(email: string, name?: string): Promise<Customer> {
   const { data, error } = await supabase
     .from("customers")
+    .upsert({ email: normalizeEmail(email), name }, { onConflict: "email" })
     .select()
-    .eq("email", normalizeEmail(email))
     .single();
 
-  if (error) {
-    if (error.code === "PGRST116") return null; // Not found
-    throw error;
-  }
+  if (error) throw error;
+  return mapCustomerFromDb(data);
+}
 
-  return {
-    id: data.id,
-    email: data.email,
-    name: data.name,
-    createdAt: data.created_at,
-  };
+export async function updateCustomer(id: string, updates: Partial<Omit<Customer, "id" | "createdAt">>): Promise<Customer> {
+  const { data, error } = await supabase
+    .from("customers")
+    .update(mapCustomerToDb(updates))
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return mapCustomerFromDb(data);
 }
 
 export async function getCustomerPurchases(customerId: string): Promise<Purchase[]> {
@@ -187,7 +164,6 @@ export async function saveWorkbookAnswers(input: {
   currentPageId: string;
   completedPage?: boolean;
 }): Promise<UserWorkbookProgress> {
-  // 1. Save answers
   if (input.answers.length > 0) {
     const { error: answersError } = await supabase.from("workbook_answers").upsert(
       input.answers.map((item) => ({
@@ -204,7 +180,6 @@ export async function saveWorkbookAnswers(input: {
     if (answersError) throw answersError;
   }
 
-  // 2. Update progress
   const currentProgress = await getProgress(input.customerId, input.productSlug);
   const completedPages = [...currentProgress.completedPages];
 
@@ -238,7 +213,36 @@ export async function saveWorkbookAnswers(input: {
   };
 }
 
-export type CustomerWithPurchases = Customer & {
-  purchases: Purchase[];
-  progress: UserWorkbookProgress[];
-};
+export async function upsertPaidPurchase(input: {
+  customerId: string;
+  productSlug: string;
+  stripeSessionId: string;
+  stripeCustomerId?: string | null;
+}): Promise<Purchase> {
+  const { data, error } = await supabase
+    .from("purchases")
+    .upsert(
+      {
+        customer_id: input.customerId,
+        product_slug: input.productSlug,
+        stripe_session_id: input.stripeSessionId,
+        stripe_customer_id: input.stripeCustomerId || undefined,
+        status: "paid",
+      },
+      { onConflict: "stripe_session_id" },
+    )
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return {
+    id: data.id,
+    customerId: data.customer_id,
+    productSlug: data.product_slug,
+    stripeSessionId: data.stripe_session_id,
+    stripeCustomerId: data.stripe_customer_id,
+    status: data.status,
+    createdAt: data.created_at,
+  };
+}

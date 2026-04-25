@@ -9,6 +9,8 @@ import type { Product } from "@/data/products";
 import type { UserWorkbookAnswer, UserWorkbookProgress } from "@/lib/db/types";
 import type { Workbook, WorkbookContentBlock } from "@/data/workbooks";
 import { getWorkbookPages } from "@/data/workbooks";
+import { personalizeText } from "@/lib/utils/text-personalization";
+import { Customer } from "@/lib/db/types";
 
 type SaveState = "saved" | "saving" | "error";
 
@@ -18,6 +20,7 @@ type WorkbookReaderProps = {
   initialPageId: string;
   initialAnswers: UserWorkbookAnswer[];
   initialProgress: UserWorkbookProgress;
+  customer: Customer | null;
 };
 
 export function WorkbookReader({
@@ -26,6 +29,7 @@ export function WorkbookReader({
   initialPageId,
   initialAnswers,
   initialProgress,
+  customer,
 }: WorkbookReaderProps) {
   const pages = useMemo(() => getWorkbookPages(workbook), [workbook]);
   const initialIndex = Math.max(
@@ -133,10 +137,17 @@ export function WorkbookReader({
         </div>
 
         <article className="rounded-[1.5rem] bg-white/70 p-6 shadow-[0_18px_56px_rgba(54,39,28,0.08)] sm:p-8">
-          <h1 className="text-4xl font-semibold leading-tight tracking-normal sm:text-6xl">{page.title}</h1>
+          <h1 className="text-4xl font-semibold leading-tight tracking-normal sm:text-6xl">
+            {personalizeText(page.title, customer)}
+          </h1>
           <div className="mt-7 space-y-5">
             {page.contentBlocks.map((block, index) => (
-              <ContentBlock key={`${page.id}-${index}`} block={block} accent={product.accentColor} />
+              <ContentBlock 
+                key={`${page.id}-${index}`} 
+                block={block} 
+                accent={product.accentColor} 
+                customer={customer} 
+              />
             ))}
           </div>
 
@@ -144,9 +155,13 @@ export function WorkbookReader({
             <div className="mt-8 space-y-6">
               {page.prompts.map((prompt) => (
                 <label key={prompt.id} className="block">
-                  <span className="text-lg font-black leading-7 text-[#342b25]">{prompt.label}</span>
+                  <span className="text-lg font-black leading-7 text-[#342b25]">
+                    {personalizeText(prompt.label, customer)}
+                  </span>
                   {prompt.helperText ? (
-                    <span className="mt-1 block text-sm font-semibold text-[#7a6c60]">{prompt.helperText}</span>
+                    <span className="mt-1 block text-sm font-semibold text-[#7a6c60]">
+                      {personalizeText(prompt.helperText, customer)}
+                    </span>
                   ) : null}
                   <textarea
                     value={answers[answerKey(prompt.id)] || ""}
@@ -190,15 +205,15 @@ export function WorkbookReader({
   );
 }
 
-function ContentBlock({ block, accent }: { block: WorkbookContentBlock; accent: string }) {
+function ContentBlock({ block, accent, customer }: { block: WorkbookContentBlock; accent: string; customer: Customer | null }) {
   if (block.type === "paragraph") {
-    return <p className="text-lg font-semibold leading-8 text-[#4c4038]">{block.text}</p>;
+    return <p className="text-lg font-semibold leading-8 text-[#4c4038]">{personalizeText(block.text, customer)}</p>;
   }
 
   if (block.type === "quote") {
     return (
       <blockquote className="rounded-2xl bg-[#211b17] p-5 text-xl font-semibold leading-8 text-white">
-        “{block.text}”
+        “{personalizeText(block.text, customer)}”
       </blockquote>
     );
   }
@@ -209,7 +224,7 @@ function ContentBlock({ block, accent }: { block: WorkbookContentBlock; accent: 
         {block.items.map((item) => (
           <p key={item} className="flex gap-3 rounded-2xl bg-[#f8f2e8] p-4 text-base font-black leading-7">
             <span className="mt-1 h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: accent }} />
-            {item}
+            {personalizeText(item, customer)}
           </p>
         ))}
       </div>
@@ -220,21 +235,21 @@ function ContentBlock({ block, accent }: { block: WorkbookContentBlock; accent: 
     return (
       <div className="rounded-2xl bg-[#f8f2e8] p-5">
         <p className="text-sm font-black uppercase tracking-[0.14em]" style={{ color: accent }}>
-          {block.title}
+          {personalizeText(block.title, customer)}
         </p>
-        <p className="mt-3 text-lg font-semibold leading-8 text-[#4c4038]">{block.text}</p>
+        <p className="mt-3 text-lg font-semibold leading-8 text-[#4c4038]">{personalizeText(block.text, customer)}</p>
       </div>
     );
   }
 
   if (block.type === "warningNote") {
-    return <p className="rounded-2xl bg-[#f0ddd7] p-5 text-base font-black leading-7 text-[#69372f]">{block.text}</p>;
+    return <p className="rounded-2xl bg-[#f0ddd7] p-5 text-base font-black leading-7 text-[#69372f]">{personalizeText(block.text, customer)}</p>;
   }
 
   if (block.type === "matrix") {
     return (
       <div className="rounded-2xl bg-[#f8f2e8] p-5">
-        <h2 className="text-xl font-black">{block.title}</h2>
+        <h2 className="text-xl font-black">{personalizeText(block.title, customer)}</h2>
       </div>
     );
   }

@@ -20,7 +20,7 @@ export const loLascioWorkbook: Workbook = {
           contentBlocks: [
             {
               type: "paragraph",
-              text: "Se sei arrivato/a qui, probabilmente non è un momento semplice.",
+              text: "Sei arrivat[o|a] qui, {{name}}. Probabilmente non è un momento semplice.",
             },
             {
               type: "paragraph",
@@ -28,11 +28,11 @@ export const loLascioWorkbook: Workbook = {
             },
             {
               type: "paragraph",
-              text: "Un momento ti sembra chiaro. Quello dopo sei di nuovo confuso/a.",
+              text: "Un momento ti sembra chiaro. Quello dopo sei di nuovo confus[o|a].",
             },
             {
               type: "paragraph",
-              text: "Non è perché sei indeciso/a. È perché quello che stai vivendo è difficile.",
+              text: "Non è perché sei indecis[o|a]. È perché quello che stai vivendo è difficile.",
             },
             {
               type: "paragraph",
@@ -156,7 +156,7 @@ export const loLascioWorkbook: Workbook = {
                 "Ho paura di perdere questa persona.",
                 "Mi sento in colpa.",
                 "Voglio una risposta subito.",
-                "Sto decidendo mentre sono agitato/a.",
+                "Sto decidendo mentre sono agitat[o|a].",
               ],
             },
             {
