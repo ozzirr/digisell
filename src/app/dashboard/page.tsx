@@ -8,6 +8,7 @@ import { ProfileModal } from "@/components/dashboard/ProfileModal";
 import { buildPurchasedProducts } from "@/lib/dashboard";
 import { getCurrentCustomer } from "@/lib/auth/customer-access";
 import { getCustomerPurchases, getProgress } from "@/lib/db/repository";
+import { Customer } from "@/lib/db/types";
 
 export const metadata = {
   title: "La tua area You First",

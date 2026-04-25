@@ -19,7 +19,7 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session, o
     throw new Error(`Checkout session ${session.id} is missing a customer email.`);
   }
 
-  const customer = await upsertCustomer({ email, name });
+  const customer = await upsertCustomer(email, name);
   const purchase = await upsertPaidPurchase({
     customerId: customer.id,
     productSlug,
