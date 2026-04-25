@@ -1,5 +1,5 @@
 import type { Product } from "@/data/products";
-import { createSignedDownloadUrl } from "@/lib/download-links";
+import { createMagicAccessUrl } from "@/lib/auth/customer-access";
 import { requireEnv } from "@/lib/env";
 import { getResend } from "@/lib/resend";
 
@@ -12,35 +12,35 @@ type SendPurchaseEmailInput = {
 export async function sendPurchaseEmail({ to, product, checkoutSessionId }: SendPurchaseEmailInput) {
   const from = requireEnv("RESEND_FROM_EMAIL");
   const supportEmail = process.env.SUPPORT_EMAIL || from;
-  const downloadUrl = createSignedDownloadUrl(product.slug, product.downloadable.fileKey);
+  const accessUrl = createMagicAccessUrl(to);
 
   return getResend().emails.send({
     from,
     to,
-    subject: `Your ${product.title} is ready`,
+    subject: "Il tuo workbook You First è pronto",
     html: `
       <div style="font-family: Arial, sans-serif; color: #17201a; line-height: 1.6; max-width: 620px; margin: 0 auto;">
-        <p>Thank you for your purchase.</p>
-        <h1 style="font-size: 28px; line-height: 1.2;">${product.title}</h1>
-        <p>Your digital workbook is ready. Use the secure link below to download it:</p>
+        <p>Grazie per il tuo acquisto.</p>
+        <h1 style="font-size: 28px; line-height: 1.2;">${product.name}</h1>
+        <p>Il tuo workbook è disponibile nella tua area personale. Puoi leggerlo, compilarlo e riprenderlo quando vuoi.</p>
         <p>
-          <a href="${downloadUrl}" style="display: inline-block; background: #17201a; color: #ffffff; padding: 14px 20px; border-radius: 999px; text-decoration: none; font-weight: 700;">
-            Download your workbook
+          <a href="${accessUrl}" style="display: inline-block; background: #17201a; color: #ffffff; padding: 14px 20px; border-radius: 999px; text-decoration: none; font-weight: 700;">
+            Accedi alla tua area
           </a>
         </p>
-        <p>This link is temporary and generated for your order. If it expires, contact us and we will help.</p>
-        <p>Support: <a href="mailto:${supportEmail}">${supportEmail}</a></p>
-        <p style="font-size: 12px; color: #6b7280;">Checkout session: ${checkoutSessionId}</p>
+        <p>Questo link è personale e temporaneo. Se scade, contattaci e ti aiutiamo.</p>
+        <p>Supporto: <a href="mailto:${supportEmail}">${supportEmail}</a></p>
+        <p style="font-size: 12px; color: #6b7280;">Sessione checkout: ${checkoutSessionId}</p>
       </div>
     `,
     text: [
-      "Thank you for your purchase.",
+      "Grazie per il tuo acquisto.",
       "",
-      `${product.title} is ready.`,
-      `Download link: ${downloadUrl}`,
+      "Il tuo workbook è disponibile nella tua area personale.",
+      `Accedi da qui: ${accessUrl}`,
       "",
-      `Support: ${supportEmail}`,
-      `Checkout session: ${checkoutSessionId}`,
+      `Supporto: ${supportEmail}`,
+      `Sessione checkout: ${checkoutSessionId}`,
     ].join("\n"),
   });
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { LandingPage } from "@/components/landing/LandingPage";
+import { getCurrentCustomer } from "@/lib/auth/customer-access";
 import { getProductBySlug, products } from "@/data/products";
 
 type ProductPageProps = {
@@ -43,5 +44,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  return <LandingPage product={product} />;
+  const customer = await getCurrentCustomer();
+  return <LandingPage product={product} isAuthenticated={Boolean(customer)} />;
 }

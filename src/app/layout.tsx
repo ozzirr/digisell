@@ -5,17 +5,17 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: {
-    default: "DigiSell | Digital Workbook Checkout",
-    template: "%s | DigiSell",
+    default: "You First | Workbook digitali",
+    template: "%s | You First",
   },
   description:
-    "A production-ready digital product selling system for landing pages, Stripe Checkout, and automated email delivery.",
+    "Workbook digitali per rimetterti al centro quando l'amore ti confonde.",
   openGraph: {
-    title: "DigiSell | Digital Workbook Checkout",
+    title: "You First | Workbook digitali",
     description:
-      "Sell premium downloadable workbooks with Stripe Checkout, secure delivery links, and transactional email fulfillment.",
+      "Kit digitali pratici per scrivere, riflettere e fare chiarezza nei momenti emotivi difficili.",
     type: "website",
-    siteName: "DigiSell",
+    siteName: "You First",
   },
 };
 
@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="it" data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   );

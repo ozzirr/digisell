@@ -25,6 +25,7 @@ export async function POST(request: Request) {
       cancel_url: `${appUrl}/checkout/cancel`,
       metadata: {
         productSlug: product.slug,
+        productName: product.name,
       },
       line_items: [
         {
@@ -33,11 +34,11 @@ export async function POST(request: Request) {
             currency: product.currency,
             unit_amount: product.price,
             product_data: {
-              name: product.title,
+              name: product.name,
               description: product.subtitle,
-              images: [`${appUrl}${product.coverImage}`],
               metadata: {
                 productSlug: product.slug,
+                productName: product.name,
                 fileKey: product.downloadable.fileKey,
               },
             },

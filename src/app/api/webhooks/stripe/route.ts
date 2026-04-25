@@ -2,31 +2,14 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-import { getProductBySlug } from "@/data/products";
 import { requireEnv } from "@/lib/env";
-import { sendPurchaseEmail } from "@/lib/email";
+import { fulfillCheckoutSession } from "@/lib/fulfillment";
 import { getStripe } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const productSlug = session.metadata?.productSlug;
-  const product = productSlug ? getProductBySlug(productSlug) : null;
-  const email = session.customer_details?.email || session.customer_email;
-
-  if (!productSlug || !product) {
-    throw new Error(`Checkout session ${session.id} is missing a valid product slug.`);
-  }
-
-  if (!email) {
-    throw new Error(`Checkout session ${session.id} is missing a customer email.`);
-  }
-
-  await sendPurchaseEmail({
-    to: email,
-    product,
-    checkoutSessionId: session.id,
-  });
+  await fulfillCheckoutSession(session);
 }
 
 export async function POST(request: Request) {
